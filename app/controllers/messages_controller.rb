@@ -1,10 +1,11 @@
 class MessagesController < ApplicationController
+  before_action :set_message, only: [:show, :edit, :update, :destroy]
+
   def index
-      @messages = Message.all
+    @messages = Message.all
   end
 
   def show
-    @message = Message.find(params[:id])
   end
 
   def new
@@ -16,7 +17,7 @@ class MessagesController < ApplicationController
 
     if @message.save
       flash[:success] = 'Message が正常に投稿されました'
-      redirect_to @message #処理をmessages#showのアクションへと強制的に移動させるもので、createアクション実行後にさらにshowアクションが実行される
+      redirect_to @message
     else
       flash.now[:danger] = 'Message が投稿されませんでした'
       render :new
@@ -24,12 +25,9 @@ class MessagesController < ApplicationController
   end
 
   def edit
-    @message = Message.find(params[:id])
   end
-  
-  def update
-    @message = Message.find(params[:id])
 
+  def update
     if @message.update(message_params)
       flash[:success] = 'Message は正常に更新されました'
       redirect_to @message
@@ -40,7 +38,6 @@ class MessagesController < ApplicationController
   end
 
   def destroy
-    @message = Message.find(params[:id])
     @message.destroy
 
     flash[:success] = 'Message は正常に削除されました'
@@ -49,7 +46,10 @@ class MessagesController < ApplicationController
 
   private
 
-  # Strong Parameter
+  def set_message
+    @message = Message.find(params[:id])
+  end
+
   def message_params
     params.require(:message).permit(:content)
   end
